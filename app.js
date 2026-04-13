@@ -17,7 +17,7 @@ const BOOST = 6;
 const TRAIN = 7;
 
 /**
- * @typedef {{ highestStat: number, limit: Stats, max: Stats }} MountInfo
+ * @typedef {{ current: Stats, limit: Stats, max: Stats }} MountInfo
  */
 
 /**
@@ -67,8 +67,9 @@ function serializeGLPKStatus(status, glpk) {
  * @param {{ timeImportance: number, timeLimitSeconds: number }} opts
  */
 async function calculateIngredients(mountInfo, opts) {
+  const highestCurrentStat = Math.max(...mountInfo.current);
   const target = subtractStats(mountInfo.max, mountInfo.limit);
-  const allowedIngredients = allIngredients.filter((ing) => ing.level <= mountInfo.highestStat);
+  const allowedIngredients = allIngredients.filter((ing) => ing.level <= highestCurrentStat);
 
   /**
    * @type {import("glpk.js").GLPK}
@@ -143,7 +144,7 @@ async function calculateIngredients(mountInfo, opts) {
 
 /** @type {MountInfo} */
 const mountInfo = {
-  highestStat: 10,
+  current: [1, 3, 1, 2, 1, 1, 1, 1],
   limit: [10, 10, 10, 10, 10, 10, 10, 10],
   max: [40, 40, 40, 40, 40, 40, 40, 40],
 };
