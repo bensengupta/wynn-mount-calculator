@@ -15,6 +15,20 @@ const HANDL = 4;
 const TOUGH = 5;
 const BOOST = 6;
 const TRAIN = 7;
+const STAT_NAMES = ["Speed", "Acceleration", "Altitude", "Energy", "Handling", "Toughness", "Boost", "Training"];
+
+/**
+ * @template {Element} T
+ * @param {string} selector
+ * @returns {T}
+ */
+function queryRequired(selector) {
+  const element = document.querySelector(selector);
+  if (!element) {
+    throw new Error(`Missing required element: ${selector}`);
+  }
+  return /** @type {T} */ (element);
+}
 
 /**
  * @typedef {{ current: Stats, limit: Stats, max: Stats }} MountInfo
@@ -142,28 +156,106 @@ async function calculateIngredients(mountInfo, opts) {
   };
 }
 
-/** @type {MountInfo} */
-const mountInfo = {
+const mountForm = /** @type {HTMLFormElement} */ (queryRequired("#mount-form"));
+const statsTableBody = /** @type {HTMLTableSectionElement} */ (queryRequired("#stats-table-body"));
+const timeImportanceInput = /** @type {HTMLInputElement} */ (queryRequired("#time-importance"));
+const timeImportanceValue = /** @type {HTMLElement} */ (queryRequired("#time-importance-value"));
+
+const runtimeEl = /** @type {HTMLElement} */ (queryRequired("#runtime"));
+const solutionStatusEl = /** @type {HTMLElement} */ (queryRequired("#solution-status"));
+const totalCostEl = /** @type {HTMLElement} */ (queryRequired("#total-cost"));
+const statusEl = /** @type {HTMLElement} */ (queryRequired("#status"));
+const ingredientsListEl = /** @type {HTMLUListElement} */ (queryRequired("#ingredients-list"));
+
+const defaultMountInfo = {
   current: [1, 3, 1, 2, 1, 1, 1, 1],
   limit: [10, 10, 10, 10, 10, 10, 10, 10],
   max: [40, 40, 40, 40, 40, 40, 40, 40],
 };
-const options = {
-  timeImportance: 0.5,
-  timeLimitSeconds: 3,
-};
 
-const result = await calculateIngredients(mountInfo, options);
-const { time, status, totalQuantity, totalCost, ingredients } = result;
+for (let i = 0; i < STAT_NAMES.length; i++) {
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td>${STAT_NAMES[i]}</td>
+    <td><input type="number" min="0" step="1" name="current-${i}" value="${defaultMountInfo.current[i]}"></td>
+    <td><input type="number" min="0" step="1" name="limit-${i}" value="${defaultMountInfo.limit[i]}"></td>
+    <td><input type="number" min="0" step="1" name="max-${i}" value="${defaultMountInfo.max[i]}"></td>
+  `;
+  statsTableBody.appendChild(row);
+}
 
-console.log(`Time: ${time} seconds`);
+function updateTimeImportanceLabel() {
+  timeImportanceValue.textContent = Number(timeImportanceInput.value).toFixed(2);
+}
 
-console.log("Solution:");
-console.log(`Status: ${status}`);
-console.log(`Cost: ${totalCost}`);
-console.log(`Num ingredients: ${totalQuantity}`);
-for (const { ingredient, quantity } of ingredients) {
-  for (let i = 0; i < quantity; i++) {
-    console.log(`  ${ingredient.name} (Level ${ingredient.level})`);
+/**
+ * @param {FormData} formData
+ * @param {string} prefix
+ * @returns {Stats}
+ */
+function readStats(formData, prefix) {
+  return Array.from({ length: 8 }, (_, i) => {
+    const raw = formData.get(`${prefix}-${i}`);
+    const value = Number(raw);
+    return Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0;
+  });
+}
+
+/**
+ * @param {Awaited<ReturnType<typeof calculateIngredients>>} result
+ */
+function renderResult(result) {
+  runtimeEl.textContent = `${result.time.toFixed(3)}s`;
+  solutionStatusEl.textContent = result.status;
+  totalCostEl.textContent = `${result.totalCost}`;
+  statusEl.textContent = `Ingredients selected: ${result.totalQuantity}`;
+
+  ingredientsListEl.innerHTML = "";
+  if (result.ingredients.length === 0) {
+    const item = document.createElement("li");
+    item.textContent = "No ingredients required for this target.";
+    ingredientsListEl.appendChild(item);
+    return;
+  }
+
+  for (const { ingredient, quantity } of result.ingredients) {
+    const item = document.createElement("li");
+    item.textContent = `${ingredient.name} (Level ${ingredient.level}) × ${quantity}`;
+    ingredientsListEl.appendChild(item);
   }
 }
+
+updateTimeImportanceLabel();
+timeImportanceInput.addEventListener("input", updateTimeImportanceLabel);
+
+mountForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  statusEl.textContent = "Calculating...";
+  ingredientsListEl.innerHTML = "";
+
+  const formData = new FormData(mountForm);
+
+  /** @type {MountInfo} */
+  const mountInfo = {
+    current: readStats(formData, "current"),
+    limit: readStats(formData, "limit"),
+    max: readStats(formData, "max"),
+  };
+
+  const options = {
+    timeImportance: Number(formData.get("timeImportance")) || 0,
+    timeLimitSeconds: Math.max(1, Number(formData.get("timeLimitSeconds")) || 1),
+  };
+
+  try {
+    const result = await calculateIngredients(mountInfo, options);
+    renderResult(result);
+  } catch (error) {
+    runtimeEl.textContent = "-";
+    solutionStatusEl.textContent = "Error";
+    totalCostEl.textContent = "-";
+    statusEl.textContent = error instanceof Error ? error.message : "Unknown error.";
+  }
+});
+
+mountForm.requestSubmit();

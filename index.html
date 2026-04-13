@@ -6,10 +6,132 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Mount Calculator</title>
     <script type="module" src="./app.js"></script>
+    <style>
+        :root {
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color-scheme: dark;
+        }
+
+        body {
+            margin: 0;
+            padding: 2rem;
+            background: #10131a;
+            color: #e6ebff;
+        }
+
+        main {
+            max-width: 960px;
+            margin: 0 auto;
+            display: grid;
+            gap: 1rem;
+        }
+
+        .card {
+            background: #171b25;
+            border: 1px solid #2a3042;
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 0.35rem;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #3a4259;
+            border-radius: 6px;
+            background: #0f1421;
+            color: inherit;
+            padding: 0.35rem 0.45rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        button {
+            border: 0;
+            border-radius: 8px;
+            padding: 0.6rem 0.9rem;
+            background: #4f7dff;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        #status {
+            margin-top: 0.25rem;
+            font-size: 0.95rem;
+            color: #a6b4d8;
+        }
+
+        ul {
+            margin: 0.35rem 0 0;
+            padding-left: 1.3rem;
+        }
+    </style>
 </head>
 
 <body>
+    <main>
+        <h1>Wynncraft Mount Ingredient Calculator</h1>
 
+        <form id="mount-form" class="card">
+            <h2>Mount Info</h2>
+            <p>Enter current stat levels, cap limits, and target max levels.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Stat</th>
+                        <th>Current</th>
+                        <th>Limit</th>
+                        <th>Max</th>
+                    </tr>
+                </thead>
+                <tbody id="stats-table-body"></tbody>
+            </table>
+
+            <h3>Options</h3>
+            <label for="time-importance">Time importance: <strong id="time-importance-value">0.50</strong></label>
+            <input id="time-importance" name="timeImportance" type="range" min="0" max="1" value="0.5" step="0.01">
+
+            <div class="row" style="margin-top:0.8rem;">
+                <label for="time-limit-seconds">Solver time limit (seconds)</label>
+                <input id="time-limit-seconds" name="timeLimitSeconds" type="number" min="1" max="30" value="3">
+            </div>
+
+            <div style="margin-top:1rem;">
+                <button type="submit">Calculate Ingredients</button>
+            </div>
+        </form>
+
+        <section class="card" id="results">
+            <h2>Results</h2>
+            <div>Total runtime: <strong id="runtime">-</strong></div>
+            <div>Solution status: <strong id="solution-status">-</strong></div>
+            <div>Total cost: <strong id="total-cost">-</strong></div>
+            <div id="status"></div>
+
+            <h3>All Ingredients</h3>
+            <ul id="ingredients-list"></ul>
+        </section>
+    </main>
 </body>
 
 </html>
