@@ -64,12 +64,15 @@ function serializeGLPKStatus(status, glpk) {
 
 /**
  * @param {MountInfo} mountInfo
- * @param {{ timeImportance: number, timeLimit: number }} opts
+ * @param {{ timeImportance: number, timeLimitSeconds: number }} opts
  */
 async function calculateIngredients(mountInfo, opts) {
   const target = subtractStats(mountInfo.max, mountInfo.limit);
   const allowedIngredients = allIngredients.filter((ing) => ing.level <= mountInfo.highestStat);
 
+  /**
+   * @type {import("glpk.js").GLPK}
+   */
   const glpk = await GLPKFactory();
 
   const objective = allowedIngredients.map((ing, idx) => ({
@@ -98,7 +101,7 @@ async function calculateIngredients(mountInfo, opts) {
 
   const generals = allowedIngredients.map((_, idx) => `x${idx}`);
 
-  /** @type {import("glpk.js/node").LP} */
+  /** @type {import("glpk.js").LP} */
   const lp = {
     name: "LP",
     objective: {
@@ -114,38 +117,52 @@ async function calculateIngredients(mountInfo, opts) {
   const glpkOptions = {
     msglev: glpk.GLP_MSG_ERR,
     presol: true,
-    tmlim: opts.timeLimit,
+    tmlim: opts.timeLimitSeconds,
   };
 
   const { time, result } = await glpk.solve(lp, glpkOptions);
 
-  console.log(`Time: ${time} seconds`);
+  const ingredients = Object.entries(result.vars)
+    .filter(([_, varValue]) => varValue > 0)
+    .map(([varName, varValue]) => {
+      const index = parseInt(varName.substring(1));
+      return {
+        ingredient: allowedIngredients[index],
+        quantity: varValue,
+      };
+    });
 
-  console.log("Solution:");
-  console.log(`Status: ${serializeGLPKStatus(result.status, glpk)}`);
-  console.log(`Objective Value: ${result.z}`);
-  let totalQuantity = 0;
-  for (const [varName, varValue] of Object.entries(result.vars)) {
-    const index = parseInt(varName.substring(1));
-
-    const ingredient = allowedIngredients[index];
-    const quantity = varValue;
-
-    if (quantity <= 0) continue;
-    totalQuantity += quantity;
-
-    console.log(
-      `  ${ingredient.name} (Level ${ingredient.level}): ${quantity}`,
-    );
-  }
-  console.log("Total ingredients used:", totalQuantity);
+  return {
+    time,
+    status: serializeGLPKStatus(result.status, glpk),
+    ingredients,
+    totalQuantity: ingredients.reduce((sum, ing) => sum + ing.quantity, 0),
+    totalCost: ingredients.reduce((sum, ing) => sum + ing.ingredient.level * ing.quantity, 0),
+  };
 }
 
 /** @type {MountInfo} */
 const mountInfo = {
-  highestStat: 1,
+  highestStat: 10,
   limit: [10, 10, 10, 10, 10, 10, 10, 10],
   max: [40, 40, 40, 40, 40, 40, 40, 40],
 };
+const options = {
+  timeImportance: 0.5,
+  timeLimitSeconds: 3,
+};
 
-await calculateIngredients(mountInfo, { timeImportance: 0.5, timeLimit: 3 });
+const result = await calculateIngredients(mountInfo, options);
+const { time, status, totalQuantity, totalCost, ingredients } = result;
+
+console.log(`Time: ${time} seconds`);
+
+console.log("Solution:");
+console.log(`Status: ${status}`);
+console.log(`Cost: ${totalCost}`);
+console.log(`Num ingredients: ${totalQuantity}`);
+for (const { ingredient, quantity } of ingredients) {
+  for (let i = 0; i < quantity; i++) {
+    console.log(`  ${ingredient.name} (Level ${ingredient.level})`);
+  }
+}
