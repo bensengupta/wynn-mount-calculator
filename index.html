@@ -14,95 +14,191 @@
             font-style: normal;
         }
 
+        @font-face {
+            font-family: 'Monocraft';
+            src: url("./Monocraft-SemiBold.woff2") format('woff2');
+            font-weight: 600;
+            font-style: normal;
+        }
+
         :root {
             font-family: Monocraft, Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             color-scheme: dark;
+
+            --primary: #00CA4A;
+            --text: #FCFCFC;
+            --accent: #A8A8A8;
+            --disabled: #545454;
+            --bg: #2C2C2C;
+
+            --current-level: #AAF7C4;
         }
 
-        input {
-            font-family: inherit;
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
         }
 
-        input:invalid {
-            border: 2px dashed red;
+        /* Reset heading tags */
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            margin: 0;
+            display: inline-block;
         }
 
-        input:valid {
-            border: 2px solid black;
+        ul {
+            list-style-type: none;
+            padding: 0px;
+            margin: 0px;
         }
 
         body {
             margin: 0;
             padding: 2rem;
-            background: #10131a;
-            color: #e6ebff;
+            background: black;
+            color: var(--text);
         }
 
         main {
-            max-width: 960px;
-            margin: 0 auto;
             display: grid;
+            grid-template-columns: 1fr;
             gap: 1rem;
+            align-items: start;
+
+            max-width: 80rem;
+            margin: 1rem auto;
+
+            @media (width >=64rem) {
+                grid-template-columns: fit-content(25rem) 1fr;
+            }
+        }
+
+        input {
+            color: var(--text);
+            font-family: inherit;
+
+            &[type="number"] {
+                border: none;
+                border-radius: 6px;
+                font-size: inherit;
+                padding: 0.1rem 0.25rem;
+                background-color: black;
+            }
+
+            &::placeholder {
+                color: var(--text);
+                opacity: 0.5;
+            }
         }
 
         .card {
-            background: #171b25;
-            border: 1px solid #2a3042;
-            border-radius: 12px;
-            padding: 1rem;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            text-align: left;
-            padding: 0.35rem;
-        }
-
-        input[type="number"] {
-            width: 100%;
-            box-sizing: border-box;
-            border: 1px solid #3a4259;
+            background: var(--bg);
+            border: 1px solid var(--accent);
             border-radius: 6px;
-            background: #0f1421;
-            color: inherit;
-            padding: 0.35rem 0.45rem;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        #stats-grid {
+            display: grid;
+            grid-template-columns: 10rem repeat(3, fit-content(100%));
+            align-items: center;
+            gap: 0.25rem 0.1rem;
+
+            /* Header column */
+            &>span:nth-child(4n + 1) {
+                color: white;
+            }
+
+            /* Current column */
+            &>span:nth-child(4n + 2) {
+                color: var(--accent);
+                display: flex;
+                align-items: center;
+                justify-content: end;
+
+                &>input {
+                    color: var(--current-level);
+                    text-align: end;
+                }
+            }
+
+            /* Limit column */
+            &>span:nth-child(4n + 3) {
+                color: var(--accent);
+                display: flex;
+                align-items: center;
+            }
+
+            /* Max column */
+            &>span:nth-child(4n + 4) {
+                padding-left: 0.25rem;
+                color: var(--disabled);
+                display: flex;
+                align-items: center;
+            }
+
+
+            /* ----- Remove up/down arrows from input[type="number"] ----- */
+            /* Chrome, Safari, Edge, Opera */
+            input::-webkit-outer-spin-button,
+            input::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+
+            input[type="number"] {
+                /* Firefox */
+                -moz-appearance: textfield;
+                appearance: textfield;
+                width: 2.5rem;
+            }
+        }
+
+        summary {
+            margin: -0.5em -0.5em 0;
+            padding: 0.5em;
         }
 
         input[type="range"] {
             width: 100%;
         }
 
-        .row {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 0.5rem;
-            align-items: center;
+        input[type="number"] {
+            max-width: 5rem;
         }
 
         button {
             border: 0;
-            border-radius: 8px;
+            border-radius: 6px;
             padding: 0.6rem 0.9rem;
             background: #4f7dff;
-            color: white;
+            background: var(--primary);
             font-weight: 600;
             cursor: pointer;
+            box-shadow: 0px 5px 0px 0px rgba(from var(--primary) r g b / 0.3);
+
+            &:active {
+                box-shadow: 0px 2px 0px 0px rgba(from var(--primary) r g b / 0.3);
+                transform: translateY(3px);
+            }
         }
 
-        #status {
-            margin-top: 0.25rem;
-            font-size: 0.95rem;
-            color: #a6b4d8;
+        .form-col:not(:first-child) {
+            margin-top: 0.5rem;
         }
 
-        ul {
-            margin: 0.35rem 0 0;
-            padding-left: 1.3rem;
+        .form-col {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
 
         .ingredient-sprite {
@@ -111,175 +207,179 @@
             height: 32px;
             width: 32px;
         }
+
+        #status {
+            font-size: 0.75rem;
+            color: var(--accent);
+            cursor: help;
+        }
+
+        .ingredient-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ingredients-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
     </style>
 </head>
 
 <body>
+    <h2>Wynncraft Mount Ingredient Calculator</h2>
+
     <main>
-        <h1>Wynncraft Mount Ingredient Calculator</h1>
-
         <form id="mount-form" class="card">
-            <h2>Mount Info</h2>
+            <div id="stats-grid">
+                <span></span>
+                <span>Level</span>
+                <span><span aria-hidden="true">/</span>Limit</span>
+                <span>
+                    <span aria-hidden="true">(</span>Max<span aria-hidden="true">)</span>
+                </span>
 
-            <p>Enter current stat levels, cap limits, and target max levels.</p>
+                <span>Speed</span>
+                <span>
+                    <input name="current-0" type="number" min="1" max="300" placeholder="1" required>
+                </span>
+                <span>
+                    /
+                    <input name="limit-0" type="number" min="1" max="300" placeholder="10" required>
+                </span>
+                <span>
+                    (
+                    <input name="max-0" type="number" min="1" max="300" placeholder="30" required>
+                    )
+                </span>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Stat</th>
-                        <th>Current</th>
-                        <th>Limit</th>
-                        <th>Max</th>
-                    </tr>
-                </thead>
+                <span>Acceleration</span>
+                <span>
+                    <input name="current-1" type="number" min="1" max="300" placeholder="1" required>
+                </span>
+                <span>
+                    /
+                    <input name="limit-1" type="number" min="1" max="300" placeholder="10" required>
+                </span>
+                <span>
+                    (
+                    <input name="max-1" type="number" min="1" max="300" placeholder="30" required>
+                    )
+                </span>
 
-                <tbody id="stats-table-body">
-                    <tr>
-                        <td>Speed</td>
-                        <td>
-                            <input name="current-0" type="number" min="1" max="300" inputmode="numeric" placeholder="1"
-                                required>
-                        </td>
-                        <td>
-                            <input name="limit-0" type="number" min="1" max="300" inputmode="numeric" placeholder="10"
-                                required>
-                        </td>
-                        <td>
-                            <input name="max-0" type="number" min="1" max="300" inputmode="numeric" placeholder="30"
-                                required>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Acceleration</td>
-                        <td>
-                            <input name="current-1" type="number" min="1" max="300" inputmode="numeric" placeholder="1"
-                                required>
-                        </td>
-                        <td>
-                            <input name="limit-1" type="number" min="1" max="300" inputmode="numeric" placeholder="10"
-                                required>
-                        </td>
-                        <td>
-                            <input name="max-1" type="number" min="1" max="300" inputmode="numeric" placeholder="30"
-                                required>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Altitude</td>
-                        <td>
-                            <input name="current-2" type="number" min="1" max="300" inputmode="numeric" placeholder="1"
-                                required>
-                        </td>
-                        <td>
-                            <input name="limit-2" type="number" min="1" max="300" inputmode="numeric" placeholder="10"
-                                required>
-                        </td>
-                        <td>
-                            <input name="max-2" type="number" min="1" max="300" inputmode="numeric" placeholder="30"
-                                required>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Energy</td>
-                        <td>
-                            <input name="current-3" type="number" min="1" max="300" inputmode="numeric" placeholder="1"
-                                required>
-                        </td>
-                        <td>
-                            <input name="limit-3" type="number" min="1" max="300" inputmode="numeric" placeholder="10"
-                                required>
-                        </td>
-                        <td>
-                            <input name="max-3" type="number" min="1" max="300" inputmode="numeric" placeholder="30"
-                                required>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Handling</td>
-                        <td>
-                            <input name="current-4" type="number" min="1" max="300" inputmode="numeric" placeholder="1"
-                                required>
-                        </td>
-                        <td>
-                            <input name="limit-4" type="number" min="1" max="300" inputmode="numeric" placeholder="10"
-                                required>
-                        </td>
-                        <td>
-                            <input name="max-4" type="number" min="1" max="300" inputmode="numeric" placeholder="30"
-                                required>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Toughness</td>
-                        <td>
-                            <input name="current-5" type="number" min="1" max="300" inputmode="numeric" placeholder="1"
-                                required>
-                        </td>
-                        <td>
-                            <input name="limit-5" type="number" min="1" max="300" inputmode="numeric" placeholder="10"
-                                required>
-                        </td>
-                        <td>
-                            <input name="max-5" type="number" min="1" max="300" inputmode="numeric" placeholder="30"
-                                required>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Boost</td>
-                        <td>
-                            <input name="current-6" type="number" min="1" max="300" inputmode="numeric" placeholder="1"
-                                required>
-                        </td>
-                        <td>
-                            <input name="limit-6" type="number" min="1" max="300" inputmode="numeric" placeholder="10"
-                                required>
-                        </td>
-                        <td>
-                            <input name="max-6" type="number" min="1" max="300" inputmode="numeric" placeholder="30"
-                                required>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Training</td>
-                        <td>
-                            <input name="current-7" type="number" min="1" max="300" inputmode="numeric" placeholder="1"
-                                required>
-                        </td>
-                        <td>
-                            <input name="limit-7" type="number" min="1" max="300" inputmode="numeric" placeholder="10"
-                                required>
-                        </td>
-                        <td>
-                            <input name="max-7" type="number" min="1" max="300" inputmode="numeric" placeholder="30"
-                                required>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                <span>Altitude</span>
+                <span>
+                    <input name="current-2" type="number" min="1" max="300" placeholder="1" required>
+                </span>
+                <span>
+                    /
+                    <input name="limit-2" type="number" min="1" max="300" placeholder="10" required>
+                </span>
+                <span>
+                    (
+                    <input name="max-2" type="number" min="1" max="300" placeholder="30" required>
+                    )
+                </span>
 
-            <h3>Options</h3>
+                <span>Energy</span>
+                <span>
+                    <input name="current-3" type="number" min="1" max="300" placeholder="1" required>
+                </span>
+                <span>
+                    /
+                    <input name="limit-3" type="number" min="1" max="300" placeholder="10" required>
+                </span>
+                <span>
+                    (
+                    <input name="max-3" type="number" min="1" max="300" placeholder="30" required>
+                    )
+                </span>
 
-            <label for="time-importance">Time importance: <strong id="time-importance-value">0.50</strong></label>
-            <input id="time-importance" name="timeImportance" type="range" min="0" max="1" value="0.5" step="0.01">
+                <span>Handling</span>
+                <span>
+                    <input name="current-4" type="number" min="1" max="300" placeholder="1" required>
+                </span>
+                <span>
+                    /
+                    <input name="limit-4" type="number" min="1" max="300" placeholder="10" required>
+                </span>
+                <span>
+                    (
+                    <input name="max-4" type="number" min="1" max="300" placeholder="30" required>
+                    )
+                </span>
 
-            <div class="row" style="margin-top:0.8rem;">
-                <label for="time-limit-seconds">Solver time limit (seconds)</label>
-                <input id="time-limit-seconds" name="timeLimitSeconds" type="number" min="1" value="3" required>
+                <span>Toughness</span>
+                <span>
+                    <input name="current-5" type="number" min="1" max="300" placeholder="1" required>
+                </span>
+                <span>
+                    /
+                    <input name="limit-5" type="number" min="1" max="300" placeholder="10" required>
+                </span>
+                <span>
+                    (
+                    <input name="max-5" type="number" min="1" max="300" placeholder="30" required>
+                    )
+                </span>
+
+                <span>Boost</span>
+                <span>
+                    <input name="current-6" type="number" min="1" max="300" placeholder="1" required>
+                </span>
+                <span>
+                    /
+                    <input name="limit-6" type="number" min="1" max="300" placeholder="10" required>
+                </span>
+                <span>
+                    (
+                    <input name="max-6" type="number" min="1" max="300" placeholder="30" required>
+                    )
+                </span>
+
+                <span>Training</span>
+                <span>
+                    <input name="current-7" type="number" min="1" max="300" placeholder="1" required>
+                </span>
+                <span>
+                    /
+                    <input name="limit-7" type="number" min="1" max="300" placeholder="10" required>
+                </span>
+                <span>
+                    (
+                    <input name="max-7" type="number" min="1" max="300" placeholder="30" required>
+                    )
+                </span>
             </div>
 
-            <div style="margin-top:1rem;">
-                <button type="submit">Calculate Ingredients</button>
-            </div>
+            <details>
+                <summary>
+                    <h3>Options</h3>
+                </summary>
+
+                <div class="form-col">
+                    <label for="time-importance">Time importance: <strong
+                            id="time-importance-value">0.50</strong></label>
+                    <input id="time-importance" name="timeImportance" type="range" min="0" max="1" value="0.5"
+                        step="0.01">
+                </div>
+
+                <div class="form-col">
+                    <label for="time-limit-seconds">Solver time limit (seconds)</label>
+                    <input id="time-limit-seconds" name="timeLimitSeconds" type="number" min="1" required>
+                </div>
+            </details>
+
+            <button type="submit">Calculate Ingredients</button>
         </form>
 
-        <section class="card" id="results">
-            <h2>Results</h2>
-            <div>Total runtime: <strong id="runtime">-</strong></div>
-            <div>Solution status: <strong id="solution-status">-</strong></div>
-            <div>Total cost: <strong id="total-cost">-</strong></div>
-            <div id="status"></div>
+        <section class="card">
+            <h3 class="ingredients-header">
+                Ingredients<span id="status"></span>
+            </h3>
 
-            <h3>All Ingredients</h3>
             <ul id="ingredients-list"></ul>
         </section>
     </main>
@@ -319,7 +419,9 @@
         const timeImportanceSlider = form.querySelector("#time-importance");
         const timeImportanceValue = form.querySelector("#time-importance-value");
         const ingredientsList = document.querySelector("#ingredients-list");
+        const statusSpan = document.querySelector("#status");
 
+        timeImportanceValue.textContent = timeImportanceSlider.value;
         timeImportanceSlider.addEventListener("input", (event) => {
             const value = event.target.value;
             timeImportanceValue.textContent = value;
@@ -352,6 +454,9 @@
             const timeImportance = Number(formData.get("timeImportance"));
             const timeLimitSeconds = Number(formData.get("timeLimitSeconds"));
 
+            statusSpan.textContent = "◔";
+            statusSpan.title = "Calculating..."
+
             let result;
             try {
                 result = await calculateIngredients(
@@ -366,11 +471,26 @@
                 throw err;
             }
 
-            const {time, status, totalCost, ingredients} = result;
+            const {time, status, totalCost, totalQuantity, ingredients} = result;
+
+            const timeMs = Math.floor(time * 1000);
+            statusSpan.textContent = `${status.substring(0, 2)} ${timeMs}ms`;
+            statusSpan.title = status.substring(2);
 
             ingredientsList.innerHTML = "";
+
+            const totalQuantityListItem = document.createElement("li");
+            totalQuantityListItem.textContent = `Total Ingredients: ${totalQuantity}`;
+            totalQuantityListItem.style.fontWeight = "600";
+            ingredientsList.appendChild(totalQuantityListItem);
+
             for (const {ingIdx, ingredient, quantity} of ingredients) {
                 const li = document.createElement("li");
+                li.classList.add("ingredient-row");
+
+                const quantitySpan = document.createElement("span");
+                quantitySpan.textContent = `${quantity} x`;
+                li.appendChild(quantitySpan);
 
                 const imgDiv = document.createElement("div");
                 const [spriteX, spriteY] = itemSpriteSheetCoords(ingIdx);
@@ -379,12 +499,14 @@
                 li.appendChild(imgDiv);
 
                 const textSpan = document.createElement("span");
-                textSpan.textContent = `${quantity}x ${ingredient.name} (Level ${ingredient.level})`;
+                textSpan.textContent = `${ingredient.name} (Level ${ingredient.level})`;
                 li.appendChild(textSpan);
 
                 ingredientsList.appendChild(li);
             }
         });
+
+        form.requestSubmit();
     </script>
 </body>
 
