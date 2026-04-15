@@ -6,11 +6,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     <title>Mount Calculator</title>
-    <script type="module" src="./app.js"></script>
     <style>
+        @font-face {
+            font-family: 'Monocraft';
+            src: url("./Monocraft-Regular.woff2") format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         :root {
-            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-family: Monocraft, Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             color-scheme: dark;
+        }
+
+        input {
+            font-family: inherit;
+        }
+
+        input:invalid {
+            border: 2px dashed red;
+        }
+
+        input:valid {
+            border: 2px solid black;
         }
 
         body {
@@ -86,6 +104,13 @@
             margin: 0.35rem 0 0;
             padding-left: 1.3rem;
         }
+
+        .ingredient-sprite {
+            background: url("ProfessionIcon.webp");
+            display: inline-block;
+            height: 32px;
+            width: 32px;
+        }
     </style>
 </head>
 
@@ -95,7 +120,9 @@
 
         <form id="mount-form" class="card">
             <h2>Mount Info</h2>
+
             <p>Enter current stat levels, cap limits, and target max levels.</p>
+
             <table>
                 <thead>
                     <tr>
@@ -105,16 +132,139 @@
                         <th>Max</th>
                     </tr>
                 </thead>
-                <tbody id="stats-table-body"></tbody>
+
+                <tbody id="stats-table-body">
+                    <tr>
+                        <td>Speed</td>
+                        <td>
+                            <input name="current-0" type="number" min="1" max="300" inputmode="numeric" placeholder="1"
+                                required>
+                        </td>
+                        <td>
+                            <input name="limit-0" type="number" min="1" max="300" inputmode="numeric" placeholder="10"
+                                required>
+                        </td>
+                        <td>
+                            <input name="max-0" type="number" min="1" max="300" inputmode="numeric" placeholder="30"
+                                required>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Acceleration</td>
+                        <td>
+                            <input name="current-1" type="number" min="1" max="300" inputmode="numeric" placeholder="1"
+                                required>
+                        </td>
+                        <td>
+                            <input name="limit-1" type="number" min="1" max="300" inputmode="numeric" placeholder="10"
+                                required>
+                        </td>
+                        <td>
+                            <input name="max-1" type="number" min="1" max="300" inputmode="numeric" placeholder="30"
+                                required>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Altitude</td>
+                        <td>
+                            <input name="current-2" type="number" min="1" max="300" inputmode="numeric" placeholder="1"
+                                required>
+                        </td>
+                        <td>
+                            <input name="limit-2" type="number" min="1" max="300" inputmode="numeric" placeholder="10"
+                                required>
+                        </td>
+                        <td>
+                            <input name="max-2" type="number" min="1" max="300" inputmode="numeric" placeholder="30"
+                                required>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Energy</td>
+                        <td>
+                            <input name="current-3" type="number" min="1" max="300" inputmode="numeric" placeholder="1"
+                                required>
+                        </td>
+                        <td>
+                            <input name="limit-3" type="number" min="1" max="300" inputmode="numeric" placeholder="10"
+                                required>
+                        </td>
+                        <td>
+                            <input name="max-3" type="number" min="1" max="300" inputmode="numeric" placeholder="30"
+                                required>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Handling</td>
+                        <td>
+                            <input name="current-4" type="number" min="1" max="300" inputmode="numeric" placeholder="1"
+                                required>
+                        </td>
+                        <td>
+                            <input name="limit-4" type="number" min="1" max="300" inputmode="numeric" placeholder="10"
+                                required>
+                        </td>
+                        <td>
+                            <input name="max-4" type="number" min="1" max="300" inputmode="numeric" placeholder="30"
+                                required>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Toughness</td>
+                        <td>
+                            <input name="current-5" type="number" min="1" max="300" inputmode="numeric" placeholder="1"
+                                required>
+                        </td>
+                        <td>
+                            <input name="limit-5" type="number" min="1" max="300" inputmode="numeric" placeholder="10"
+                                required>
+                        </td>
+                        <td>
+                            <input name="max-5" type="number" min="1" max="300" inputmode="numeric" placeholder="30"
+                                required>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Boost</td>
+                        <td>
+                            <input name="current-6" type="number" min="1" max="300" inputmode="numeric" placeholder="1"
+                                required>
+                        </td>
+                        <td>
+                            <input name="limit-6" type="number" min="1" max="300" inputmode="numeric" placeholder="10"
+                                required>
+                        </td>
+                        <td>
+                            <input name="max-6" type="number" min="1" max="300" inputmode="numeric" placeholder="30"
+                                required>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Training</td>
+                        <td>
+                            <input name="current-7" type="number" min="1" max="300" inputmode="numeric" placeholder="1"
+                                required>
+                        </td>
+                        <td>
+                            <input name="limit-7" type="number" min="1" max="300" inputmode="numeric" placeholder="10"
+                                required>
+                        </td>
+                        <td>
+                            <input name="max-7" type="number" min="1" max="300" inputmode="numeric" placeholder="30"
+                                required>
+                        </td>
+                    </tr>
+                </tbody>
             </table>
 
             <h3>Options</h3>
+
             <label for="time-importance">Time importance: <strong id="time-importance-value">0.50</strong></label>
             <input id="time-importance" name="timeImportance" type="range" min="0" max="1" value="0.5" step="0.01">
 
             <div class="row" style="margin-top:0.8rem;">
                 <label for="time-limit-seconds">Solver time limit (seconds)</label>
-                <input id="time-limit-seconds" name="timeLimitSeconds" type="number" min="1" max="30" value="3">
+                <input id="time-limit-seconds" name="timeLimitSeconds" type="number" min="1" value="3" required>
             </div>
 
             <div style="margin-top:1rem;">
@@ -133,6 +283,109 @@
             <ul id="ingredients-list"></ul>
         </section>
     </main>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "glpk.js": "https://esm.sh/glpk.js@5.0.0"
+        }
+      }
+    </script>
+
+    <script type="module">
+        import {
+            parseSearchParams,
+            assert,
+            updateSearchParams,
+            validateForm,
+            range,
+            calculateIngredients,
+            AbortedCalculationError,
+            itemSpriteSheetCoords,
+        } from './index.js';
+
+        const url = new URL(window.location.href);
+        const formValues = parseSearchParams(url.searchParams);
+
+        const form = document.querySelector("#mount-form");
+        assert(form, "Form element not found");
+
+        for (const {name, value} of formValues) {
+            const input = form.querySelector(`input[name="${name}"]`);
+            assert(input, `Input with name "${name}" not found`);
+            input.value = value;
+        }
+
+        const timeImportanceSlider = form.querySelector("#time-importance");
+        const timeImportanceValue = form.querySelector("#time-importance-value");
+        const ingredientsList = document.querySelector("#ingredients-list");
+
+        timeImportanceSlider.addEventListener("input", (event) => {
+            const value = event.target.value;
+            timeImportanceValue.textContent = value;
+        });
+
+        form.addEventListener("change", (event) => {
+            const formData = new FormData(form);
+            updateSearchParams(url.searchParams, formData);
+            window.history.pushState({}, "", url);
+            validateForm(form);
+        });
+
+        let formAC = new AbortController();
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const formData = new FormData(form);
+
+            formAC.abort();
+            formAC = new AbortController();
+
+            const current = range(8)
+                .map(i => Number(formData.get(`current-${i}`), 10));
+            const limit = range(8)
+                .map(i => Number(formData.get(`limit-${i}`), 10));
+            const max = range(8)
+                .map(i => Number(formData.get(`max-${i}`), 10));
+
+            const mountInfo = {current, limit, max};
+            const timeImportance = Number(formData.get("timeImportance"));
+            const timeLimitSeconds = Number(formData.get("timeLimitSeconds"));
+
+            let result;
+            try {
+                result = await calculateIngredients(
+                    mountInfo,
+                    {timeImportance, timeLimitSeconds, signal: formAC.signal}
+                );
+            } catch (err) {
+                if (err instanceof AbortedCalculationError) {
+                    console.log("Calculation aborted");
+                    return;
+                }
+                throw err;
+            }
+
+            const {time, status, totalCost, ingredients} = result;
+
+            ingredientsList.innerHTML = "";
+            for (const {ingIdx, ingredient, quantity} of ingredients) {
+                const li = document.createElement("li");
+
+                const imgDiv = document.createElement("div");
+                const [spriteX, spriteY] = itemSpriteSheetCoords(ingIdx);
+                imgDiv.classList.add('ingredient-sprite');
+                imgDiv.style.backgroundPosition = `-${spriteX}px -${spriteY}px`;
+                li.appendChild(imgDiv);
+
+                const textSpan = document.createElement("span");
+                textSpan.textContent = `${quantity}x ${ingredient.name} (Level ${ingredient.level})`;
+                li.appendChild(textSpan);
+
+                ingredientsList.appendChild(li);
+            }
+        });
+    </script>
 </body>
 
 </html>
