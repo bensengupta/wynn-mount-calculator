@@ -60,9 +60,14 @@
 
         body {
             margin: 0;
-            padding: 2rem;
             background: black;
             color: var(--text);
+
+            font-size: 14px;
+
+            @media (width >=40rem) {
+                font-size: 16px;
+            }
         }
 
         main {
@@ -71,6 +76,12 @@
             gap: 1rem;
             max-width: 80rem;
             margin: 0 auto;
+
+            padding: 1rem;
+
+            @media (width >=40rem) {
+                padding: 2rem;
+            }
         }
 
         .grid {
@@ -114,7 +125,7 @@
 
         #stats-grid {
             display: grid;
-            grid-template-columns: minmax(8rem, 10rem) repeat(3, fit-content(100%));
+            grid-template-columns: minmax(7rem, 10rem) repeat(3, fit-content(100%));
             align-items: center;
             gap: 0.25rem 0.1rem;
 
