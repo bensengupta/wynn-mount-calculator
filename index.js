@@ -182,6 +182,7 @@ export function range(end) {
  * @param {URLSearchParams} searchParams
  */
 export function parseSearchParams(searchParams) {
+  // format: c1.c2...c8-l1.l2...l8-m1.m2...m8
   const stats = searchParams.get('stats') ?? '';
 
   const statsParts = stats
@@ -189,9 +190,9 @@ export function parseSearchParams(searchParams) {
     .map((part) => part.split('.'));
 
   const statFormValues = range(8).flatMap((i) => [
-    { name: `current-${i}`, value: statsParts[i]?.[0] || "1" },
-    { name: `limit-${i}`, value: statsParts[i]?.[1] || "10" },
-    { name: `max-${i}`, value: statsParts[i]?.[2] || "30" },
+    { name: `current-${i}`, value: statsParts[0]?.[i] || "1" },
+    { name: `limit-${i}`, value: statsParts[1]?.[i] || "10" },
+    { name: `max-${i}`, value: statsParts[2]?.[i] || "30" },
   ]);
 
   const timeImportance = searchParams.get('timeImportance') ?? "0.5";
@@ -208,15 +209,11 @@ export function parseSearchParams(searchParams) {
  * @param {FormData} formData
  */
 export function updateSearchParams(searchParams, formData) {
-  const statsValues = range(8).flatMap((i) => [
-    formData.get(`current-${i}`),
-    formData.get(`limit-${i}`),
-    formData.get(`max-${i}`),
-  ]);
-
-  const statsParam = range(8)
-    .map((i) => statsValues.slice(i * 3, i * 3 + 3).join('.'))
-    .join('-');
+  const statsParam = [
+    range(8).map((i) => formData.get(`current-${i}`)).join('.'),
+    range(8).map((i) => formData.get(`limit-${i}`)).join('.'),
+    range(8).map((i) => formData.get(`max-${i}`)).join('.'),
+  ].join('-');
   searchParams.set('stats', statsParam);
 
   const timeImportance = String(formData.get('timeImportance'));
